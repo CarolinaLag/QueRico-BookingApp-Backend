@@ -1,18 +1,16 @@
 const mongoose = require("mongoose");
 
 const bookingSchema = new mongoose.Schema({
-  Booking: {
-    bookingId: Number,
-    amountOfGuests: Number,
-    amountOfTables: Number,
-    timeSlot: Number,
-    date: Date,
-    ContactInfo: {
-      firstname: String,
-      lastname: String,
-      email: String,
-      phoneNumber: String,
-    },
+  bookingId: { type: Number },
+  amountOfGuests: { type: Number },
+  amountOfTables: { type: Number },
+  timeSlot: { type: String },
+  date: { type: Date },
+  ContactInfo: {
+    firstname: { type: String },
+    lastname: { type: String },
+    email: { type: String },
+    phoneNumber: { type: Number },
   },
 });
 

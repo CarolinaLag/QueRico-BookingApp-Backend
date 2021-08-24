@@ -3,18 +3,27 @@ router = express.Router();
 const Booking = require("../models/Booking");
 
 router.route("/create").post((req, res) => {
-  const firstname = req.body.Booking.ContactInfo.firstname;
-  const lastname = req.body.Booking.ContactInfo.lastname;
-  const email = req.body.Booking.ContactInfo.email;
-  const phoneNumber = req.body.Booking.ContactInfo.phoneNumber;
+  const bookingId = 1;
+  const amountOfGuests = 2;
+  const amountOfTables = 1;
+  const timeSlot = "17";
+  const date = Date.now();
+
+  const firstname = req.body.firstname;
+  const lastname = req.body.lastname;
+  const email = req.body.email;
+  const phoneNumber = req.body.phoneNumber;
   const newBooking = new Booking({
-    Booking: {
-      ContactInfo: {
-        firstname,
-        lastname,
-        email,
-        phoneNumber,
-      },
+    bookingId,
+    amountOfGuests,
+    amountOfTables,
+    timeSlot,
+    date,
+    ContactInfo: {
+      firstname,
+      lastname,
+      email,
+      phoneNumber,
     },
   });
 
