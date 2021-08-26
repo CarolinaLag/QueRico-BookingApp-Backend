@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const bookingSchema = new mongoose.Schema({
-  bookingId: { type: Number },
   amountOfGuests: { type: Number },
   amountOfTables: { type: Number },
   timeSlot: { type: String },

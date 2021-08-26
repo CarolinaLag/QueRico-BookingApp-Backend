@@ -2,6 +2,37 @@ const express = require("express");
 router = express.Router();
 const Booking = require("../models/Booking");
 
+//Make new booking
+exports.makeBooking = async (req, res) => {
+  const amountOfGuests = req.body.guests;
+  const guestsPerTable = 6;
+  const neededTables = req.body.guests / guestsPerTable;
+  const amountOfTables = Math.ceil(neededTables);
+  const timeSlot = req.body.timeSlot;
+  const date = req.body.date;
+
+  const firstname = req.body.firstname;
+  const lastname = req.body.lastname;
+  const email = req.body.email;
+  const phoneNumber = req.body.phoneNumber;
+  const newBooking = new Booking({
+    amountOfGuests,
+    amountOfTables,
+    timeSlot,
+    date,
+    ContactInfo: {
+      firstname,
+      lastname,
+      email,
+      phoneNumber,
+    },
+  });
+
+  const savedBooking = await newBooking.save();
+  res.send(savedBooking);
+};
+
+//Check if there are enough tables for the requested booking
 exports.checkTables = async (req, res) => {
   const guestsPerTable = 6;
   const tablesInRestaurant = 15;
