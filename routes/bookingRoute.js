@@ -1,6 +1,7 @@
 const express = require("express");
 router = express.Router();
 const Booking = require("../models/Booking");
+const checkTables = require("../controller/checkTables");
 
 router.route("/create").post((req, res) => {
   const bookingId = 1;
@@ -33,5 +34,7 @@ router.route("/create").post((req, res) => {
 router.route("/bookings").get((req, res) => {
   Booking.find().then((foundBookings) => res.json(foundBookings));
 });
+
+router.get("/checktables/:date/:guests", checkTables.checkTables);
 
 module.exports = router;
