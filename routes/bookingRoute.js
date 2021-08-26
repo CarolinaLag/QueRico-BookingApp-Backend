@@ -35,6 +35,6 @@ router.route("/bookings").get((req, res) => {
   Booking.find().then((foundBookings) => res.json(foundBookings));
 });
 
-router.get("/checktables", checkTables.checkTables);
+router.get("/checktables/:date/:guests", checkTables.checkTables);
 
 module.exports = router;

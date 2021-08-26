@@ -5,16 +5,16 @@ const Booking = require("../models/Booking");
 exports.checkTables = async (req, res) => {
   const guestsPerTable = 6;
   const tablesInRestaurant = 15;
-  const numberOfGuestsInBooking = 18;
-  const chosenDateForBooking = Date.now();
+  const numberOfGuestsInBooking = req.params.guests;
+  const chosenDateForBooking = req.params.date;
 
   const firstTimeSlot = "17";
   const secondTimeSlot = "19";
 
-  const tablesNeededForBooking = numberOfGuests / guestsPerTable;
+  const tablesNeededForBooking = numberOfGuestsInBooking / guestsPerTable;
 
   const bookingsAtFive = await Booking.find({
-    // date: chosenDate,
+    date: chosenDateForBooking,
     timeSlot: firstTimeSlot,
   });
   let bookedTablesAtFive = 0;
@@ -26,7 +26,7 @@ exports.checkTables = async (req, res) => {
   let availableTablesAtFive = tablesInRestaurant - bookedTablesAtFive;
 
   const bookingsAtSeven = await Booking.find({
-    //date: req.body.date,
+    date: chosenDateForBooking,
     timeSlot: secondTimeSlot,
   });
 
@@ -38,13 +38,13 @@ exports.checkTables = async (req, res) => {
   let availableTablesAtSeven = tablesInRestaurant - bookedTablesAtSeven;
 
   if (availableTablesAtFive > tablesNeededForBooking) {
-    console.log("Bord finns klockan 17");
+    res.send({ tablesAtFive: true });
   } else {
-    console.log("Bord finns inte");
+    res.send({ tablesAtFive: false });
   }
   if (availableTablesAtSeven > tablesNeededForBooking) {
-    console.log("Bord finns klockan 19");
+    res.send({ tablesAtSeven: true });
   } else {
-    console.log("Bord finns inte");
+    res.send({ tablesAtSeven: false });
   }
 };
