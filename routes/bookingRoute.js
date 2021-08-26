@@ -5,10 +5,10 @@ const checkTables = require("../controller/checkTables");
 
 router.route("/create").post((req, res) => {
   const bookingId = 1;
-  const amountOfGuests = 2;
-  const amountOfTables = 1;
-  const timeSlot = "17";
-  const date = Date.now();
+  const amountOfGuests = 90;
+  const amountOfTables = 15;
+  const timeSlot = "19";
+  const date = "26082021";
 
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
