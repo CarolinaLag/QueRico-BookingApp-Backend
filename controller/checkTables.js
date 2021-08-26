@@ -37,14 +37,22 @@ exports.checkTables = async (req, res) => {
 
   let availableTablesAtSeven = tablesInRestaurant - bookedTablesAtSeven;
 
+  let tablesAtFive = false;
+  let tablesAtSeven = false;
+
+  if (
+    availableTablesAtFive > tablesNeededForBooking &&
+    availableTablesAtSeven > tablesNeededForBooking
+  ) {
+    res.send({ tablesAtFive: true, tablesAtSeven: true });
+  }
+
   if (availableTablesAtFive > tablesNeededForBooking) {
-    res.send({ tablesAtFive: true });
-  } else {
-    res.send({ tablesAtFive: false });
+    res.send({ tablesAtFive: true, tablesAtSeven });
   }
   if (availableTablesAtSeven > tablesNeededForBooking) {
-    res.send({ tablesAtSeven: true });
-  } else {
-    res.send({ tablesAtSeven: false });
+    res.send({ tablesAtFive, tablesAtSeven: true });
   }
+
+  res.send({ tablesAtFive, tablesAtSeven });
 };
