@@ -6,15 +6,15 @@ const Booking = require("../models/Booking");
 exports.makeBooking = async (req, res) => {
   const amountOfGuests = req.body.guests;
   const guestsPerTable = 6;
-  const neededTables = req.body.guests / guestsPerTable;
+  const neededTables = amountOfGuests / guestsPerTable;
   const amountOfTables = Math.ceil(neededTables);
-  const timeSlot = req.body.timeSlot;
+  const timeSlot = req.body.timeslot;
   const date = req.body.date;
 
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
   const email = req.body.email;
-  const phoneNumber = req.body.phoneNumber;
+  const phoneNumber = req.body.phonenumber;
   const newBooking = new Booking({
     amountOfGuests,
     amountOfTables,
