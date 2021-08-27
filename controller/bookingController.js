@@ -39,8 +39,8 @@ exports.checkTables = async (req, res) => {
   const numberOfGuestsInBooking = req.params.guests;
   const chosenDateForBooking = req.params.date;
 
-  const firstTimeSlot = "17";
-  const secondTimeSlot = "19";
+  const firstTimeSlot = "17:00";
+  const secondTimeSlot = "19:00";
 
   const tablesNeededForBooking = numberOfGuestsInBooking / guestsPerTable;
 
