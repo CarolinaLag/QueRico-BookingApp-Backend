@@ -8,6 +8,8 @@ router.post("/create", bookingController.makeBooking);
 
 router.get("/bookings", adminController.getAllBookings);
 
+router.get("/delete/:id", adminController.removeBooking);
+
 router.get("/checktables/:date/:guests", bookingController.checkTables);
 
 module.exports = router;
