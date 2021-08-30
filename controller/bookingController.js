@@ -1,5 +1,7 @@
 const express = require("express");
 router = express.Router();
+require("dotenv").config();
+const nodemailer = require("nodemailer");
 const Booking = require("../models/Booking");
 
 //Make new booking
@@ -30,6 +32,41 @@ exports.makeBooking = async (req, res) => {
 
   const savedBooking = await newBooking.save();
   res.send(savedBooking);
+
+  let data = req.body;
+  let smtpTransport = nodemailer.createTransport({
+    service: "Gmail",
+    port: 465,
+    auth: {
+      user: process.env.ADMIN_EMAIL,
+      pass: process.env.PASS,
+    },
+  });
+
+  let mailOptions = {
+    from: process.env.ADMIN_EMAIL,
+    to: data.email,
+    subject: "Bokningsbekräftelse",
+    html: `
+    <p>Tack för din bokning!</p>
+    <h2>Din bokning:</h2>
+    <p>Förnamn: ${data.firstname}</p>
+    <p>Efternamn: ${data.lastname}</p>
+    <p>Email: ${data.email}</p>
+    <p>Telefonnummer: ${data.phonenumber}</p>
+    <p>Datum: ${data.date} </p>
+    <p>Tid: ${data.timeslot}</p>
+    `,
+  };
+
+  await smtpTransport.sendMail(mailOptions, (error, response) => {
+    if (error) {
+      return res.send(error);
+    } else {
+      return res.send("Success");
+    }
+  });
+  return smtpTransport.close();
 };
 
 //Check if there are enough tables for the requested booking
@@ -87,3 +124,7 @@ exports.checkTables = async (req, res) => {
     return res.send({ tablesAtFive, tablesAtSeven });
   }
 };
+
+// exports.sendConfirmationEmail = async (req, res) => {
+
+// };
