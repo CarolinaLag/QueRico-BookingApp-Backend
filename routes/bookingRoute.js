@@ -4,10 +4,13 @@ const Booking = require("../models/Booking");
 const bookingController = require("../controller/bookingController");
 const adminController = require("../controller/adminController");
 
-router.post("/create", bookingController.makeBooking);
+router.post("/create", bookingController.makeNewReservation);
 
 router.get("/bookings", adminController.getAllBookings);
 
-router.get("/checktables/:date/:guests", bookingController.checkTables);
+router.get(
+  "/checktables/:date/:guests",
+  bookingController.checkTableAvailability
+);
 
 module.exports = router;

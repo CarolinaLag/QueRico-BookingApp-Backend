@@ -3,87 +3,93 @@ router = express.Router();
 const Booking = require("../models/Booking");
 
 //Make new booking
-exports.makeBooking = async (req, res) => {
+exports.makeNewReservation = async (req, res) => {
   const amountOfGuests = req.body.guests;
   const guestsPerTable = 6;
   const neededTables = amountOfGuests / guestsPerTable;
   const amountOfTables = Math.ceil(neededTables);
   const timeSlot = req.body.timeslot;
   const date = req.body.date;
-
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
   const email = req.body.email;
   const phoneNumber = req.body.phonenumber;
-  const newBooking = new Booking({
-    amountOfGuests,
+
+  let reservations = await checkTablesOnDate(date);
+
+  let reservationIsPossible = await checkTablesByTimeslot(
+    reservations,
     amountOfTables,
-    timeSlot,
-    date,
-    ContactInfo: {
-      firstname,
-      lastname,
-      email,
-      phoneNumber,
-    },
+    timeSlot
+  );
+
+  if (reservationIsPossible === false) {
+    return res.send("nej");
+  } else {
+    const newBooking = new Booking({
+      amountOfGuests,
+      amountOfTables,
+      timeSlot,
+      date,
+      ContactInfo: {
+        firstname,
+        lastname,
+        email,
+        phoneNumber,
+      },
+    });
+
+    const savedBooking = await newBooking.save();
+    res.send(savedBooking);
+  }
+};
+
+checkTablesByTimeslot = async (bookings, numberOfTables, timeSlot) => {
+  let bookedTables = 0;
+  bookings.forEach((booking) => {
+    if (booking.timeSlot === timeSlot) {
+      bookedTables += booking.amountOfTables;
+    }
   });
 
-  const savedBooking = await newBooking.save();
-  res.send(savedBooking);
+  let tablesAreAvailable = false;
+  let availableTables = 15 - bookedTables;
+  if (availableTables >= numberOfTables) {
+    tablesAreAvailable = true;
+    return tablesAreAvailable;
+  } else {
+    return tablesAreAvailable;
+  }
+};
+
+checkTablesOnDate = async (chosenDateForBooking) => {
+  const bookingsOnDate = await Booking.find({
+    date: chosenDateForBooking,
+  });
+
+  return bookingsOnDate;
 };
 
 //Check if there are enough tables for the requested booking
-exports.checkTables = async (req, res) => {
+exports.checkTableAvailability = async (req, res) => {
+  const timeSlotFive = "17:00";
+  const timeSlotSeven = "19:00";
   const guestsPerTable = 6;
-  const tablesInRestaurant = 15;
   const numberOfGuestsInBooking = req.params.guests;
   const chosenDateForBooking = req.params.date;
+  const tablesNeeded = Math.ceil(numberOfGuestsInBooking / guestsPerTable);
 
-  const firstTimeSlot = "17:00";
-  const secondTimeSlot = "19:00";
+  let reservationsByDate = await checkTablesOnDate(chosenDateForBooking);
+  let tablesAvailableAtFive = await checkTablesByTimeslot(
+    reservationsByDate,
+    tablesNeeded,
+    timeSlotFive
+  );
+  let tablesAvailableAtSeven = await checkTablesByTimeslot(
+    reservationsByDate,
+    tablesNeeded,
+    timeSlotSeven
+  );
 
-  const tablesNeededForBooking = numberOfGuestsInBooking / guestsPerTable;
-
-  const bookingsAtFive = await Booking.find({
-    date: chosenDateForBooking,
-    timeSlot: firstTimeSlot,
-  });
-  let bookedTablesAtFive = 0;
-
-  bookingsAtFive.forEach((booking) => {
-    bookedTablesAtFive += booking.amountOfTables;
-  });
-
-  let availableTablesAtFive = tablesInRestaurant - bookedTablesAtFive;
-
-  const bookingsAtSeven = await Booking.find({
-    date: chosenDateForBooking,
-    timeSlot: secondTimeSlot,
-  });
-
-  let bookedTablesAtSeven = 0;
-  bookingsAtSeven.forEach((booking) => {
-    bookedTablesAtSeven += booking.amountOfTables;
-  });
-
-  let availableTablesAtSeven = tablesInRestaurant - bookedTablesAtSeven;
-
-  let tablesAtFive = false;
-  let tablesAtSeven = false;
-
-  if (
-    availableTablesAtFive > tablesNeededForBooking &&
-    availableTablesAtSeven > tablesNeededForBooking
-  ) {
-    return res.send({ tablesAtFive: true, tablesAtSeven: true });
-  }
-
-  if (availableTablesAtFive > tablesNeededForBooking) {
-    return res.send({ tablesAtFive: true, tablesAtSeven });
-  }
-  if (availableTablesAtSeven > tablesNeededForBooking) {
-    return res.send({ tablesAtFive, tablesAtSeven: true });
-  } else {
-    return res.send({ tablesAtFive, tablesAtSeven });
-  }
+  return res.send({ tablesAvailableAtFive, tablesAvailableAtSeven });
 };
