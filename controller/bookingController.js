@@ -17,9 +17,7 @@ exports.makeNewReservation = async (req, res) => {
   const email = req.body.email;
   const phoneNumber = req.body.phonenumber;
 
-
   let reservations = await checkTablesOnDate(date);
-
 
   let reservationIsPossible = await checkTablesByTimeslot(
     reservations,
@@ -42,23 +40,23 @@ exports.makeNewReservation = async (req, res) => {
         phoneNumber,
       },
     });
-const savedBooking = await newBooking.save();
-  res.send(savedBooking);
-let data = req.body;
-  let smtpTransport = nodemailer.createTransport({
-    service: "Gmail",
-    port: 465,
-    auth: {
-      user: process.env.ADMIN_EMAIL,
-      pass: process.env.PASS,
-    },
-  });
+    const savedBooking = await newBooking.save();
+    res.send(savedBooking);
+    let data = req.body;
+    let smtpTransport = nodemailer.createTransport({
+      service: "Gmail",
+      port: 465,
+      auth: {
+        user: process.env.ADMIN_EMAIL,
+        pass: process.env.PASS,
+      },
+    });
 
-  let mailOptions = {
-    from: process.env.ADMIN_EMAIL,
-    to: data.email,
-    subject: "Bokningsbekräftelse",
-    html: `
+    let mailOptions = {
+      from: process.env.ADMIN_EMAIL,
+      to: data.email,
+      subject: "Bokningsbekräftelse",
+      html: `
     <p>Tack för din bokning!</p>
     <h2>Din bokning:</h2>
     <p>Förnamn: ${data.firstname}</p>
@@ -68,19 +66,16 @@ let data = req.body;
     <p>Datum: ${data.date} </p>
     <p>Tid: ${data.timeslot}</p>
     `,
-  };
+    };
 
-  await smtpTransport.sendMail(mailOptions, (error, response) => {
-    if (error) {
-      return res.send(error);
-    } else {
-      return res.send("Success");
-    }
-  });
-  return smtpTransport.close();
-};
-  
-  
+    await smtpTransport.sendMail(mailOptions, (error, response) => {
+      if (error) {
+        return res.send(error);
+      } else {
+        return res.send("Success");
+      }
+    });
+    return smtpTransport.close();
   }
 };
 
@@ -133,5 +128,3 @@ exports.checkTableAvailability = async (req, res) => {
 
   return res.send({ tablesAvailableAtFive, tablesAvailableAtSeven });
 };
-
-
