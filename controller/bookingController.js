@@ -42,6 +42,7 @@ exports.makeNewReservation = async (req, res) => {
     });
     const savedBooking = await newBooking.save();
     res.send(savedBooking);
+
     let data = req.body;
     let smtpTransport = nodemailer.createTransport({
       service: "Gmail",
