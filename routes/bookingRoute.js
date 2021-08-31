@@ -15,4 +15,6 @@ router.get(
 
 router.get("/delete/:id", adminController.removeBooking);
 
+router.post("/edit/:id", adminController.editReservation);
+
 module.exports = router;
