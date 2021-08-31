@@ -42,6 +42,7 @@ exports.makeNewReservation = async (req, res) => {
     });
     const savedBooking = await newBooking.save();
     res.send(savedBooking);
+    console.log(savedBooking);
 
     let data = req.body;
     let smtpTransport = nodemailer.createTransport({
@@ -66,7 +67,7 @@ exports.makeNewReservation = async (req, res) => {
     <p>Telefonnummer: ${data.phonenumber}</p>
     <p>Datum: ${data.date} </p>
     <p>Tid: ${data.timeslot}</p>
-    `,
+    <h3> Klicka <a href="http://localhost:3001/delete/${savedBooking._id}">här</a> för att avboka</h3>`,
     };
 
     await smtpTransport.sendMail(mailOptions, (error, response) => {
