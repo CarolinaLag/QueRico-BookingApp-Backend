@@ -7,6 +7,11 @@ exports.getAllBookings = async (req, res) => {
   Booking.find().then((foundBookings) => res.json(foundBookings));
 };
 
+getReservations = async () => {
+  let reservations = Booking.find();
+  return reservations;
+};
+
 exports.removeBooking = async (req, res) => {
   const id = req.params.id;
 
@@ -15,5 +20,7 @@ exports.removeBooking = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-  return res.send("Bokningen är borttagen");
+  let bookings = await getReservations();
+
+  return res.send(bookings);
 };
