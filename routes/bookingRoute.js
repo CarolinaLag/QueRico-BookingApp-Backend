@@ -13,7 +13,7 @@ router.get(
   bookingController.checkTableAvailability
 );
 
-router.get("/delete/:id", adminController.removeBooking);
+router.delete("/delete/:id", adminController.removeBooking);
 
 router.post("/edit/:id", adminController.editReservation);
 
