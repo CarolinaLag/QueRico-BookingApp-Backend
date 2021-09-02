@@ -13,6 +13,6 @@ router.get(
   bookingController.checkTableAvailability
 );
 
-router.get("/delete/:id", adminController.removeBooking);
+router.delete("/delete/:id", adminController.removeBooking);
 
 module.exports = router;
