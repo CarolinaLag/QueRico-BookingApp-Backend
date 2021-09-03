@@ -13,19 +13,15 @@ getReservations = async () => {
   return reservations;
 };
 
-exports.removeBooking = async (req, res, next) => {
-  const id = req.params.id;
-
+exports.removeBooking = async (id) => {
   let guestEmail = "";
   try {
-    await Booking.findByIdAndDelete({ _id: id }).then((res) => {
-      guestEmail = res.ContactInfo.email;
+    await Booking.findByIdAndDelete({ _id: id }).then((reservation) => {
+      guestEmail = reservation.ContactInfo.email;
     });
   } catch (error) {
-    console.log(error);
+    return 404;
   }
-
-  let bookings = await getReservations();
 
   let smtpTransport = nodemailer.createTransport({
     service: "Gmail",
@@ -44,14 +40,28 @@ exports.removeBooking = async (req, res, next) => {
   <p>Din reservation är nu avbokad!</p>`,
   };
 
-  await smtpTransport.sendMail(mailOptions, (error, response) => {
+  await smtpTransport.sendMail(mailOptions, (error) => {
     if (error) {
-      return res.send(error);
+      return 404;
     } else {
       smtpTransport.close();
-      return res.send(bookings);
+      return 200;
     }
   });
+};
+
+
+exports.adminRemoveBooking = async (req, res, error) => {
+  const id = req.params.id;
+
+  let response = await this.removeBooking(id);
+
+  let bookings = await getReservations();
+  if (response === error) {
+    return res.send("Oj något gick, försök igen");
+  } else {
+    return res.send(bookings);
+  }
 };
 
 exports.editReservation = async (req, res) => {
@@ -79,3 +89,4 @@ exports.editReservation = async (req, res) => {
 
   res.send(updatedReservation);
 }
+
