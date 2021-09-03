@@ -53,3 +53,29 @@ exports.removeBooking = async (req, res, next) => {
     }
   });
 };
+
+exports.editReservation = async (req, res) => {
+  const { amountOfGuests, amountOfTables, timeSlot, date, firstname, lastname, email, phoneNumber } = req.body;
+  
+  const updatedReservation = {
+    amountOfGuests,
+    amountOfTables,
+    timeSlot,
+    date,
+    ContactInfo: {
+      firstname,
+      lastname,
+      email,
+      phoneNumber,
+    }
+  };
+
+  await Booking.updateOne(
+    { _id: req.params.id }, 
+    {
+      updatedReservation
+    },
+  );
+
+  res.send(updatedReservation);
+}
