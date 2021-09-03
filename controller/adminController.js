@@ -50,6 +50,7 @@ exports.removeBooking = async (id) => {
   });
 };
 
+
 exports.adminRemoveBooking = async (req, res, error) => {
   const id = req.params.id;
 
@@ -62,3 +63,30 @@ exports.adminRemoveBooking = async (req, res, error) => {
     return res.send(bookings);
   }
 };
+
+exports.editReservation = async (req, res) => {
+  const { amountOfGuests, amountOfTables, timeSlot, date, firstname, lastname, email, phoneNumber } = req.body;
+  
+  const updatedReservation = {
+    amountOfGuests,
+    amountOfTables,
+    timeSlot,
+    date,
+    ContactInfo: {
+      firstname,
+      lastname,
+      email,
+      phoneNumber,
+    }
+  };
+
+  await Booking.updateOne(
+    { _id: req.params.id }, 
+    {
+      updatedReservation
+    },
+  );
+
+  res.send(updatedReservation);
+}
+
