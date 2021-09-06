@@ -13,8 +13,10 @@ router.get(
   bookingController.checkTableAvailability
 );
 
-router.delete("/delete/:id", adminController.removeBooking);
+router.delete("/delete/:id", bookingController.guestRemoveBooking);
 
-router.post("/edit/:id", adminController.editReservation);
+router.delete("/deleteAdmin/:id", adminController.adminRemoveBooking);
+
+router.put("/edit/", adminController.editReservation);
 
 module.exports = router;
