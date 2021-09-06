@@ -119,7 +119,7 @@ exports.editReservation = async (req, res) => {
   }
 
   await Booking.updateOne({ _id: _id }, updatedReservation);
-  reservations = await Booking.find();
+  reservations = await checkTablesOnDate(updatedReservation.date);
 
   res.send({ reservations, tableAvailable });
 };
