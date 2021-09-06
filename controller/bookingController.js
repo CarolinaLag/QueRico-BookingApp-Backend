@@ -99,11 +99,11 @@ checkTablesByTimeslot = async (bookings, numberOfTables, timeSlot) => {
   }
 };
 
-checkTablesOnDate = async (chosenDateForBooking) => {
+exports.checkTablesOnDate = async (chosenDateForBooking) => {
   const bookingsOnDate = await Booking.find({
     date: chosenDateForBooking,
   });
-
+  console.log(bookingsOnDate);
   return bookingsOnDate;
 };
 
