@@ -2,7 +2,6 @@ const express = require("express");
 router = express.Router();
 const Booking = require("../models/Booking");
 const nodemailer = require("nodemailer");
-const { checkTablesOnDate } = require("./bookingController");
 
 //Find all existing bookings
 exports.getAllBookings = async (req, res) => {
@@ -49,6 +48,14 @@ exports.removeBooking = async (id) => {
       return 200;
     }
   });
+};
+
+checkTablesOnDate = async (chosenDateForBooking) => {
+  const bookingsOnDate = await Booking.find({
+    date: chosenDateForBooking,
+  });
+
+  return bookingsOnDate;
 };
 
 exports.getReservationsOnDate = async (req, res) => {
