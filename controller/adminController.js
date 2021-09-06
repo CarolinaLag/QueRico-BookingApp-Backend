@@ -2,6 +2,7 @@ const express = require("express");
 router = express.Router();
 const Booking = require("../models/Booking");
 const nodemailer = require("nodemailer");
+const { checkTablesOnDate } = require("./bookingController");
 
 //Find all existing bookings
 exports.getAllBookings = async (req, res) => {
@@ -50,7 +51,11 @@ exports.removeBooking = async (id) => {
   });
 };
 
-
+exports.getReservationsOnDate = async (req, res) => {
+  let date = req.params.date;
+  let reservations = await checkTablesOnDate(date);
+  return res.send(reservations);
+};
 exports.adminRemoveBooking = async (req, res, error) => {
   const id = req.params.id;
 
@@ -65,8 +70,17 @@ exports.adminRemoveBooking = async (req, res, error) => {
 };
 
 exports.editReservation = async (req, res) => {
-  const { amountOfGuests, amountOfTables, timeSlot, date, firstname, lastname, email, phoneNumber } = req.body;
-  
+  const {
+    amountOfGuests,
+    amountOfTables,
+    timeSlot,
+    date,
+    firstname,
+    lastname,
+    email,
+    phoneNumber,
+  } = req.body;
+
   const updatedReservation = {
     amountOfGuests,
     amountOfTables,
@@ -77,16 +91,15 @@ exports.editReservation = async (req, res) => {
       lastname,
       email,
       phoneNumber,
-    }
+    },
   };
 
   await Booking.updateOne(
-    { _id: req.params.id }, 
+    { _id: req.params.id },
     {
-      updatedReservation
-    },
+      updatedReservation,
+    }
   );
 
   res.send(updatedReservation);
-}
-
+};
