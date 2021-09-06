@@ -77,36 +77,49 @@ exports.adminRemoveBooking = async (req, res, error) => {
 };
 
 exports.editReservation = async (req, res) => {
-  const {
-    amountOfGuests,
-    amountOfTables,
-    timeSlot,
-    date,
-    firstname,
-    lastname,
-    email,
-    phoneNumber,
-  } = req.body;
-
+  const { _id, amountOfGuests, amountOfTables, timeSlot, date, ContactInfo } =
+    req.body;
   const updatedReservation = {
-    amountOfGuests,
-    amountOfTables,
-    timeSlot,
-    date,
+    _id: _id,
+    amountOfGuests: amountOfGuests,
+    amountOfTables: amountOfTables,
+    timeSlot: timeSlot,
+    date: date,
     ContactInfo: {
-      firstname,
-      lastname,
-      email,
-      phoneNumber,
+      firstname: ContactInfo.firstname,
+      lastname: ContactInfo.lastname,
+      email: ContactInfo.email,
+      phoneNumber: ContactInfo.phoneNumber,
     },
   };
+  let reservations = [];
+  const currentReservation = await Booking.findOne({ _id: _id });
+  const guestsPerTable = 6;
+  const tablesNeeded = Math.ceil(amountOfGuests / guestsPerTable);
+  let tableAvailable = true;
 
-  await Booking.updateOne(
-    { _id: req.params.id },
-    {
-      updatedReservation,
-    }
-  );
+  //OM antal bord som behövs är mer än det antal bord man redan har bokat sedan tidigare,
+  //OM det är ett nytt datum,
+  //OM timeslot är ändrat:  ska man kolla om det är ledigt, annars uppdatera bara
 
-  res.send(updatedReservation);
+  if (
+    updatedReservation.date !== currentReservation.date ||
+    updatedReservation.timeSlot !== currentReservation.timeSlot ||
+    updatedReservation.tablesNeeded > currentReservation.amountOfTables
+  ) {
+    let reservationsByDate = await checkTablesOnDate(updatedReservation.date);
+
+    tableAvailable = await checkTablesByTimeslot(
+      reservationsByDate,
+      tablesNeeded,
+      updatedReservation.timeSlot
+    );
+
+    if (tableAvailable === false) return res.send(reservations, tableAvailable);
+  }
+
+  await Booking.updateOne({ _id: _id }, updatedReservation);
+  reservations = await checkTablesOnDate(updatedReservation.date);
+
+  res.send({ reservations, tableAvailable });
 };
