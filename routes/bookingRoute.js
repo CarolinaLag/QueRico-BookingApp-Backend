@@ -13,6 +13,8 @@ router.get(
   bookingController.checkTableAvailability
 );
 
+router.get("/bookingsByDate/:date", adminController.getReservationsOnDate);
+
 router.delete("/delete/:id", bookingController.guestRemoveBooking);
 
 router.delete("/deleteAdmin/:id", adminController.adminRemoveBooking);
