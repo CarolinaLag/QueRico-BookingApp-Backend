@@ -15,7 +15,9 @@ router.get(
 
 router.get("/bookingsByDate/:date", adminController.getReservationsOnDate);
 
-router.delete("/delete/:id", adminController.removeBooking);
+router.delete("/delete/:id", bookingController.guestRemoveBooking);
+
+router.delete("/deleteAdmin/:id", adminController.adminRemoveBooking);
 
 router.post("/edit/:id", adminController.editReservation);
 

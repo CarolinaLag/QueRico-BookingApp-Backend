@@ -3,6 +3,7 @@ router = express.Router();
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 const Booking = require("../models/Booking");
+const { removeBooking } = require("../controller/adminController");
 
 //Make new booking
 exports.makeNewReservation = async (req, res) => {
@@ -129,4 +130,16 @@ exports.checkTableAvailability = async (req, res) => {
   );
 
   return res.send({ tablesAvailableAtFive, tablesAvailableAtSeven });
+};
+
+exports.guestRemoveBooking = async (req, res, error) => {
+  const id = req.params.id;
+
+  let response = await removeBooking(id);
+
+  if (response === 404) {
+    return res.send("Oj något gick fel, försök igen");
+  } else {
+    return res.send("Din bokning är borttagen");
+  }
 };
