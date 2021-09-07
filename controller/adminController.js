@@ -15,9 +15,11 @@ getReservations = async () => {
 
 exports.removeBooking = async (id) => {
   let guestEmail = "";
+  let dateForReservation = "";
   try {
     await Booking.findByIdAndDelete({ _id: id }).then((reservation) => {
       guestEmail = reservation.ContactInfo.email;
+      dateForReservation = reservation.date;
     });
   } catch (error) {
     return 404;
@@ -45,7 +47,7 @@ exports.removeBooking = async (id) => {
       return 404;
     } else {
       smtpTransport.close();
-      return 200;
+      return dateForReservation;
     }
   });
 };
@@ -68,10 +70,10 @@ exports.adminRemoveBooking = async (req, res, error) => {
 
   let response = await this.removeBooking(id);
 
-  let bookings = await getReservations();
   if (response === error) {
     return res.send("Oj något gick, försök igen");
   } else {
+    let bookings = await checkTablesOnDate(response);
     return res.send(bookings);
   }
 };
