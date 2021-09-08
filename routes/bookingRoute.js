@@ -6,19 +6,11 @@ const adminController = require("../controller/adminController");
 
 router.post("/create", bookingController.makeNewReservation);
 
-router.get("/bookings", adminController.getAllBookings);
-
 router.get(
   "/checktables/:date/:guests",
   bookingController.checkTableAvailability
 );
 
-router.get("/bookingsByDate/:date", adminController.getReservationsOnDate);
-
 router.delete("/delete/:id", bookingController.guestRemoveBooking);
-
-router.delete("/deleteAdmin/:id", adminController.adminRemoveBooking);
-
-router.put("/edit/", adminController.editReservation);
 
 module.exports = router;
