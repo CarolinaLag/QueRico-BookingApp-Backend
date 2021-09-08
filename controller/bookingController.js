@@ -42,8 +42,8 @@ exports.makeNewReservation = async (req, res) => {
       },
     });
     const savedBooking = await newBooking.save();
-    res.send(savedBooking);
-    //console.log(savedBooking);
+    const reservations = await this.checkTablesOnDate(date);
+    res.send(reservations);
 
     let data = req.body;
     let smtpTransport = nodemailer.createTransport({
