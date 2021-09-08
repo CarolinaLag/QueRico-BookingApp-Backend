@@ -104,6 +104,7 @@ exports.checkTablesOnDate = async (chosenDateForBooking) => {
   const bookingsOnDate = await Booking.find({
     date: chosenDateForBooking,
   });
+
   return bookingsOnDate;
 };
 

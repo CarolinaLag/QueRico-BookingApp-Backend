@@ -56,8 +56,25 @@ checkTablesOnDate = async (chosenDateForBooking) => {
   const bookingsOnDate = await Booking.find({
     date: chosenDateForBooking,
   });
-
   return bookingsOnDate;
+};
+
+checkTablesByTimeslot = async (bookings, numberOfTables, timeSlot) => {
+  let bookedTables = 0;
+  bookings.forEach((booking) => {
+    if (booking.timeSlot === timeSlot) {
+      bookedTables += booking.amountOfTables;
+    }
+  });
+
+  let tablesAreAvailable = false;
+  let availableTables = 15 - bookedTables;
+  if (availableTables >= numberOfTables) {
+    tablesAreAvailable = true;
+    return tablesAreAvailable;
+  } else {
+    return tablesAreAvailable;
+  }
 };
 
 exports.getReservationsOnDate = async (req, res) => {
@@ -84,7 +101,7 @@ exports.editReservation = async (req, res) => {
   const updatedReservation = {
     _id: _id,
     amountOfGuests: amountOfGuests,
-    amountOfTables: amountOfTables,
+    amountOfTables: Math.ceil(amountOfGuests / 6),
     timeSlot: timeSlot,
     date: date,
     ContactInfo: {
@@ -95,19 +112,26 @@ exports.editReservation = async (req, res) => {
     },
   };
   let reservations = [];
+
   const currentReservation = await Booking.findOne({ _id: _id });
-  const guestsPerTable = 6;
-  const tablesNeeded = Math.ceil(amountOfGuests / guestsPerTable);
+
+  let tablesNeeded = updatedReservation.amountOfTables;
+
   let tableAvailable = true;
 
   //OM antal bord som behövs är mer än det antal bord man redan har bokat sedan tidigare,
   //OM det är ett nytt datum,
   //OM timeslot är ändrat:  ska man kolla om det är ledigt, annars uppdatera bara
 
+  if (updatedReservation.amountOfTables > currentReservation.amountOfTables) {
+    tablesNeeded =
+      updatedReservation.amountOfTables - currentReservation.amountOfTables;
+  }
+
   if (
     updatedReservation.date !== currentReservation.date ||
     updatedReservation.timeSlot !== currentReservation.timeSlot ||
-    updatedReservation.tablesNeeded > currentReservation.amountOfTables
+    updatedReservation.amountOfTables > currentReservation.amountOfTables
   ) {
     let reservationsByDate = await checkTablesOnDate(updatedReservation.date);
 
@@ -117,7 +141,8 @@ exports.editReservation = async (req, res) => {
       updatedReservation.timeSlot
     );
 
-    if (tableAvailable === false) return res.send(reservations, tableAvailable);
+    if (tableAvailable === false)
+      return res.send({ reservations, tableAvailable });
   }
 
   await Booking.updateOne({ _id: _id }, updatedReservation);
