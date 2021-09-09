@@ -5,7 +5,8 @@ const nodemailer = require("nodemailer");
 const Booking = require("../models/Booking");
 const { removeBooking } = require("../controller/adminController");
 
-//Make new booking
+//Lägger in en ny bokning och skickar bekräftelsemail med avbokningslänk till angiven adress i reservationen
+//Returnerar en lista med uppdaterade bokningar enligt det datum som resrvationen gjordes på
 exports.makeNewReservation = async (req, res) => {
   const amountOfGuests = req.body.guests;
   const guestsPerTable = 6;
@@ -27,7 +28,7 @@ exports.makeNewReservation = async (req, res) => {
   );
 
   if (reservationIsPossible === false) {
-    return res.send("nej");
+    return res.send("Reservation ej möjlig");
   } else {
     const newBooking = new Booking({
       amountOfGuests,
@@ -82,6 +83,7 @@ exports.makeNewReservation = async (req, res) => {
   }
 };
 
+//Kollar bord enligt en given timeslot
 checkTablesByTimeslot = async (bookings, numberOfTables, timeSlot) => {
   let bookedTables = 0;
   bookings.forEach((booking) => {
@@ -100,6 +102,7 @@ checkTablesByTimeslot = async (bookings, numberOfTables, timeSlot) => {
   }
 };
 
+//
 exports.checkTablesOnDate = async (chosenDateForBooking) => {
   const bookingsOnDate = await Booking.find({
     date: chosenDateForBooking,
@@ -108,7 +111,7 @@ exports.checkTablesOnDate = async (chosenDateForBooking) => {
   return bookingsOnDate;
 };
 
-//Check if there are enough tables for the requested booking
+//Kollar om det finns nog med bord för den valda datumet
 exports.checkTableAvailability = async (req, res) => {
   const timeSlotFive = "17:00";
   const timeSlotSeven = "19:00";
@@ -132,6 +135,9 @@ exports.checkTableAvailability = async (req, res) => {
   return res.send({ tablesAvailableAtFive, tablesAvailableAtSeven });
 };
 
+//Tar emot ID för bokning som ska tas bort
+//Kallar på removebooking som tar bort reservationen
+//Returnerar string med svar som syns på skärmen
 exports.guestRemoveBooking = async (req, res, error) => {
   const id = req.params.id;
 
