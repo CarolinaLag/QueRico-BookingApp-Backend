@@ -28,7 +28,7 @@ exports.makeNewReservation = async (req, res) => {
   );
 
   if (reservationIsPossible === false) {
-    return res.send("Reservation ej möjlig");
+    return res.send({ reservations, reservationIsPossible });
   } else {
     const newBooking = new Booking({
       amountOfGuests,
@@ -44,7 +44,7 @@ exports.makeNewReservation = async (req, res) => {
     });
     const savedBooking = await newBooking.save();
     const reservations = await this.checkTablesOnDate(date);
-    res.send(reservations);
+    res.send({ reservations, reservationIsPossible });
 
     let data = req.body;
     let smtpTransport = nodemailer.createTransport({
@@ -69,6 +69,7 @@ exports.makeNewReservation = async (req, res) => {
     <p>Telefonnummer: ${data.phonenumber}</p>
     <p>Datum: ${data.date} </p>
     <p>Tid: ${data.timeslot}</p>
+    <p>Antal: ${data.guests}</p>
     <h3> Klicka <a href="http://localhost:3000/cancelConfirmation/${savedBooking._id}">här</a> för att avboka</h3>`,
     };
 
