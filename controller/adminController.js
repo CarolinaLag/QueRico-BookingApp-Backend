@@ -3,16 +3,8 @@ router = express.Router();
 const Booking = require("../models/Booking");
 const nodemailer = require("nodemailer");
 
-//Find all existing bookings
-exports.getAllBookings = async (req, res) => {
-  Booking.find().then((foundBookings) => res.json(foundBookings));
-};
-
-getReservations = async () => {
-  let reservations = Booking.find();
-  return reservations;
-};
-
+//Tar emot ID och raderar bokningen som hör ihop med detta
+//Skickar bekräftelsemail till den adress som är angiven i borttagen bokning
 exports.removeBooking = async (id) => {
   let guestEmail = "";
   let dateForReservation = "";
@@ -52,6 +44,7 @@ exports.removeBooking = async (id) => {
   });
 };
 
+//Skickar tillbaka en lista med bokningar för det valda datumet
 checkTablesOnDate = async (chosenDateForBooking) => {
   const bookingsOnDate = await Booking.find({
     date: chosenDateForBooking,
@@ -59,6 +52,7 @@ checkTablesOnDate = async (chosenDateForBooking) => {
   return bookingsOnDate;
 };
 
+//Skickar tillbaka en boolean baserat på ifall det finns bord den valda tiden och datumet
 checkTablesByTimeslot = async (bookings, numberOfTables, timeSlot) => {
   let bookedTables = 0;
   bookings.forEach((booking) => {
@@ -77,11 +71,15 @@ checkTablesByTimeslot = async (bookings, numberOfTables, timeSlot) => {
   }
 };
 
+//Hämtar ut bokningar till Adminsidan enligt inskickat datum
 exports.getReservationsOnDate = async (req, res) => {
   let date = req.params.date;
   let reservations = await checkTablesOnDate(date);
   return res.send(reservations);
 };
+
+//Skickar ID till removeBooking för att ta bort reservation
+//Returnerar uppdaterad lista med bokningar för att visa upp på Adminsidan
 exports.adminRemoveBooking = async (req, res, error) => {
   const id = req.params.id;
 
@@ -95,6 +93,7 @@ exports.adminRemoveBooking = async (req, res, error) => {
   }
 };
 
+//Skickar in ändrad bokning till databasen
 exports.editReservation = async (req, res) => {
   const { _id, amountOfGuests, amountOfTables, timeSlot, date, ContactInfo } =
     req.body;
@@ -119,15 +118,17 @@ exports.editReservation = async (req, res) => {
 
   let tableAvailable = true;
 
-  //OM antal bord som behövs är mer än det antal bord man redan har bokat sedan tidigare,
-  //OM det är ett nytt datum,
-  //OM timeslot är ändrat:  ska man kolla om det är ledigt, annars uppdatera bara
+  //Om antal bort i tidigare bokning är större än i den uppdaterade,
+  //jämför den tidigare bokningens bord mot den uppdaterades så det inte ser fullt ut när det inte är det
 
   if (updatedReservation.amountOfTables > currentReservation.amountOfTables) {
     tablesNeeded =
       updatedReservation.amountOfTables - currentReservation.amountOfTables;
   }
 
+  //OM antal bord som behövs är mer än det antal bord man redan har bokat sedan tidigare,
+  //OM det är ett nytt datum,
+  //OM timeslot är ändrat:  ska man kolla om det är ledigt, annars uppdatera bara
   if (
     updatedReservation.date !== currentReservation.date ||
     updatedReservation.timeSlot !== currentReservation.timeSlot ||
