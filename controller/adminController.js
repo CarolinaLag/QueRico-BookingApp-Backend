@@ -34,14 +34,22 @@ exports.removeBooking = async (id) => {
   <p>Din reservation är nu avbokad!</p>`,
   };
 
-  await smtpTransport.sendMail(mailOptions, (error) => {
+  /* await smtpTransport.sendMail(mailOptions, (error) => {
     if (error) {
       return 404;
     } else {
       smtpTransport.close();
       return dateForReservation;
     }
-  });
+  }); */
+
+  try {
+    await smtpTransport.sendMail(mailOptions);
+  } catch (error) {
+    return 404;
+  }
+  smtpTransport.close();
+  return dateForReservation;
 };
 
 //Skickar tillbaka en lista med bokningar för det valda datumet
@@ -83,12 +91,12 @@ exports.getReservationsOnDate = async (req, res) => {
 exports.adminRemoveBooking = async (req, res, error) => {
   const id = req.params.id;
 
-  let response = await this.removeBooking(id);
+  let dateForRemovedReservation = await this.removeBooking(id);
 
-  if (response === error) {
+  if (dateForRemovedReservation === error) {
     return res.send("Oj något gick, försök igen");
   } else {
-    let bookings = await checkTablesOnDate(response);
+    let bookings = await checkTablesOnDate(dateForRemovedReservation);
     return res.send(bookings);
   }
 };
