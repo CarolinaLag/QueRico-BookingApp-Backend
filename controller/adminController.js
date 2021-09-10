@@ -157,5 +157,34 @@ exports.editReservation = async (req, res) => {
   await Booking.updateOne({ _id: _id }, updatedReservation);
   reservations = await checkTablesOnDate(updatedReservation.date);
 
+  let smtpTransport = nodemailer.createTransport({
+    service: "Gmail",
+    port: 465,
+    auth: {
+      user: process.env.ADMIN_EMAIL,
+      pass: process.env.PASS,
+    },
+  });
+
+  let mailOptions = {
+    from: process.env.ADMIN_EMAIL,
+    to: updatedReservation.ContactInfo.email,
+    subject: "Uppdaterad bokningsbekräftelse",
+    html: `
+  <p>Din bokning är nu ändrad!</p>
+  <h2>Din bokning:</h2>
+  <p>Förnamn: ${updatedReservation.ContactInfo.firstname}</p>
+  <p>Efternamn: ${updatedReservation.ContactInfo.lastname}</p>
+  <p>Email: ${updatedReservation.ContactInfo.email}</p>
+  <p>Telefonnummer: ${updatedReservation.ContactInfo.phoneNumber}</p>
+  <p>Datum: ${updatedReservation.date} </p>
+  <p>Tid: ${updatedReservation.timeSlot}</p>
+  <p>Antal: ${updatedReservation.amountOfGuests}</p>
+  <h3> Klicka <a href="http://localhost:3000/cancelConfirmation/${updatedReservation._id}">här</a> för att avboka</h3>`,
+  };
+
+  smtpTransport.sendMail(mailOptions);
+  smtpTransport.close();
+
   res.send({ reservations, tableAvailable });
 };
