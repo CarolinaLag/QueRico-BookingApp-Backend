@@ -1,37 +1,14 @@
 const express = require("express");
 router = express.Router();
-const Booking = require("../models/Booking");
+const bookingController = require("../controller/bookingController");
 
-router.route("/create").post((req, res) => {
-  const bookingId = 1;
-  const amountOfGuests = 2;
-  const amountOfTables = 1;
-  const timeSlot = "17";
-  const date = Date.now();
+router.post("/create", bookingController.makeNewReservation);
 
-  const firstname = req.body.firstname;
-  const lastname = req.body.lastname;
-  const email = req.body.email;
-  const phoneNumber = req.body.phoneNumber;
-  const newBooking = new Booking({
-    bookingId,
-    amountOfGuests,
-    amountOfTables,
-    timeSlot,
-    date,
-    ContactInfo: {
-      firstname,
-      lastname,
-      email,
-      phoneNumber,
-    },
-  });
+router.get(
+  "/checktables/:date/:guests",
+  bookingController.checkTableAvailability
+);
 
-  newBooking.save();
-});
-
-router.route("/bookings").get((req, res) => {
-  Booking.find().then((foundBookings) => res.json(foundBookings));
-});
+router.delete("/delete/:id", bookingController.guestRemoveBooking);
 
 module.exports = router;
