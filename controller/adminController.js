@@ -34,15 +34,6 @@ exports.removeBooking = async (id) => {
   <p>Din reservation är nu avbokad!</p>`,
   };
 
-  /* await smtpTransport.sendMail(mailOptions, (error) => {
-    if (error) {
-      return 404;
-    } else {
-      smtpTransport.close();
-      return dateForReservation;
-    }
-  }); */
-
   try {
     await smtpTransport.sendMail(mailOptions);
   } catch (error) {
