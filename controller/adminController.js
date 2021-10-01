@@ -171,7 +171,7 @@ exports.editReservation = async (req, res) => {
   <p>Datum: ${updatedReservation.date} </p>
   <p>Tid: ${updatedReservation.timeSlot}</p>
   <p>Antal: ${updatedReservation.amountOfGuests}</p>
-  <h3> Klicka <a href="http://localhost:3000/cancelConfirmation/${updatedReservation._id}">här</a> för att avboka</h3>`,
+  <h3> Klicka <a href="https://que-rico-tapas.netlify.app/cancelConfirmation/${updatedReservation._id}">här</a> för att avboka</h3>`,
   };
 
   smtpTransport.sendMail(mailOptions);
