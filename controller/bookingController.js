@@ -70,7 +70,7 @@ exports.makeNewReservation = async (req, res) => {
     <p>Datum: ${data.date} </p>
     <p>Tid: ${data.timeslot}</p>
     <p>Antal: ${data.guests}</p>
-    <h3> Klicka <a href="https://que-rico-tapas.netlify.app/cancelConfirmation/${savedBooking._id}">här</a> för att avboka</h3>`,
+    <h3> Klicka <a href="https://que-rico-client-app.herokuapp.com/cancelConfirmation/${savedBooking._id}">här</a> för att avboka</h3>`,
     };
 
     await smtpTransport.sendMail(mailOptions, (error, response) => {
